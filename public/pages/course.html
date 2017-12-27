@@ -1,0 +1,151 @@
+<h3>课程管理</h3>
+<hr>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>编号</th>
+            <th>课程名</th>
+            <th>学分</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+    </tbody>
+</table>
+<div class="opts">
+    <button class="btn btn-danger btn-sm">修改</button>
+    <button class="btn btn-danger btn-sm">添加</button>
+    <button class="btn btn-danger btn-sm">删除</button>
+    <!--添加小图标font-awesome.png  -->
+</div>
+<!--模态框  -->
+<div class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">课程信息管理</h4>
+      </div>
+      <div class="modal-body">
+        <form action="" class="courseForm">
+            <input type="hidden" name="id">
+            课程名 <input type="text" name="name"><br>
+            学分 <input type="text" name="credit"><br>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary updBtn">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(function(){
+        //初始化页面,加载所有课程信息--------
+        $.getJSON('/course/findAll',function(data){
+            data.forEach(function(item){
+                var newTr=$('<tr>'
+                +'<td><input type="checkbox" value="'+item.id+'"></td>'
+                +'<td>'+item.name+'</td>'
+                +'<td>'+item.credit+'</td>'
+            +'</tr>');
+            $('tbody').append(newTr);
+            });
+        });
+        //为修改按钮绑定事件----------
+        $('.opts button').eq(0).off();
+        $('.opts button').eq(0).on('click',function(){
+            //先选中要修改的信息
+            var ids=$('tbody input:checkbox:checked').toArray().map(function(item){
+                return item.value;
+            });
+            if(ids.length>0){
+                var id=ids[0];
+                //获取用户原有信息
+                $.getJSON('course/findById?id='+id,function(data){
+                    //获取未修改的值显示在模态框中
+                    $('.courseForm input[name=id]').val(data[0].id); 
+                    $('.courseForm input[name=name]').val(data[0].name); 
+                    $('.courseForm input[name=credit]').val(data[0].credit);
+                    //显示模态框
+                     $('.modal').modal('show');
+                })
+            }else{
+                alert("请选中你要修改的信息");
+            }
+        
+        });
+        //确认修改
+        $('.updBtn').off();
+        $('.updBtn').on('click',function(){
+            var id=$('.courseForm input[name=id]').val(); 
+            var name=$('.courseForm input[name=name]').val();
+            var credit=$('.courseForm input[name=credit]').val();
+            var newCourse={
+                id:id,
+                name:name,
+                credit:credit
+            };
+            $.ajax('course/update',{
+                'data':newCourse,
+                'method':'POST',
+                'content-Type':'application/json',
+                success:function(data){
+                    console.log(data);
+                    $('.modal').modal('hide');
+                    $('.navleft dd').eq(1).trigger('click');
+                }
+            })   
+        });
+        //删除按钮-------
+        $('.opts button').eq(2).on('click',function(){
+            var ids = $('tbody input:checkbox:checked').map(function(index,item){
+              return $(item).val();
+            }).toArray();
+            $.ajax({
+                url:'course/batchDelete',
+                data:JSON.stringify(ids),
+                method:'post',
+                contentType:'application/json',
+                success:function(data){
+                    //alert(data);
+                    $('.navleft dd').eq(1).trigger('click');
+                }
+            });
+        });
+        //添加按钮-------
+         //为添加按钮绑定事件
+        $('.opts button').eq(1).off();
+        $('.opts button').eq(1).on('click',function(){
+            //显示模态框
+            $('.modal').modal('show');
+        })
+        //获取模态框内的value值
+        //确认添加学生信息的按钮,向数据库添加
+        $('.updBtn').off(); 
+        $('.updBtn').on('click',function(){
+            var id=$('.courseForm input[name=id]').val();
+            var name=$('.courseForm input[name=name]').val();
+            var credit=$('.courseForm input[name=credit]').val();
+            var newCourse={
+                id:id,
+                name:name,
+                credit:credit
+            };
+            $.ajax('course/save',{
+                'data':newCourse,
+                'method':'POST',
+                'content-Type':'application/json',
+                success:function(data){
+                    console.log(data);
+                    $('.modal').modal('hide');
+                    $('.navleft dd').eq(1).trigger('click');
+                }
+            })  
+        });   
+
+    })
+
+</script>

@@ -1,0 +1,43 @@
+h3{
+  margin:0;
+}
+dt,a{
+  display: block;
+  height:40px;
+  font-size: 18px;
+  color: black;
+  text-align: center;
+  line-height: 40px;
+}
+dt{
+  font-size: 20px;
+}
+header.header{
+  border-bottom: 1px double #ccc;
+  height:58px;
+}
+article.container{
+    /* overflow: hidden;   */
+  padding: 0px;
+  margin:0;  
+}
+section.navleft{
+  float:left; 
+  width:160px;
+  border-right:1px solid #ccc;
+}
+
+section.content{
+  margin-left:165px;
+  padding:20px;
+  overflow-y:scroll;
+  width:1000px;
+}
+section.content table{
+  width:1200px;
+}
+footer.footer{
+  border-top:1px solid #ccc;
+  height:50px;
+  text-align: center;
+}
